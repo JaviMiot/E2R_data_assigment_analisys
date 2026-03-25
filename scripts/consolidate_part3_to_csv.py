@@ -18,6 +18,9 @@ import openpyxl
 import xlrd
 
 
+# Configurar directorios
+ROOT_DIR = Path(__file__).resolve().parent.parent
+
 # ---------------------------------------------------------------------------
 # Logging
 # ---------------------------------------------------------------------------
@@ -26,7 +29,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
     handlers=[
-        logging.FileHandler("part3_consolidation.log", mode="w", encoding="utf-8"),
+        logging.FileHandler(ROOT_DIR / "logs/part3_consolidation.log", mode="w", encoding="utf-8"),
         logging.StreamHandler(),
     ],
 )
@@ -1013,16 +1016,16 @@ def main() -> None:
         logger.error("❌ No data found to consolidate!")
         return
 
-    csv_path = Path("/home/javi/practices/part3_consolidated.csv")
+    csv_path = ROOT_DIR / "data/part3_consolidated.csv"
     write_csv_part3(all_rows, csv_path)
 
-    report_path = Path("/home/javi/practices/part3_consolidation_report.txt")
+    report_path = ROOT_DIR / "logs/part3_consolidation_report.txt"
     write_report_part3(all_rows, group_mapping, groups_without_data, report_path)
 
     logger.info("\n✅ All done!")
     logger.info(f"   CSV:    {csv_path}")
     logger.info(f"   Report: {report_path}")
-    logger.info(f"   Log:    part3_consolidation.log")
+    logger.info(f"   Log:    logs/part3_consolidation.log")
 
 
 if __name__ == "__main__":

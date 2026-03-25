@@ -1,7 +1,7 @@
 practices/
-consolidation.log
-consolidation_report.txt
-part2_consolidated.csv
-part3_consolidated.csv
-part3_consolidation_report.txt
-part3_consolidation.log
+data/
+logs/
+.venv/
+.ruff_cache/
+__pycache__/
+*.pyc

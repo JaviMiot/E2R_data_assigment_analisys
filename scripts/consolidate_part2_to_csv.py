@@ -15,12 +15,15 @@ from typing import List, Dict, Optional, Tuple
 from datetime import datetime
 
 
+# Configurar directorios
+ROOT_DIR = Path(__file__).resolve().parent.parent
+
 # Configurar logging
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
     handlers=[
-        logging.FileHandler("consolidation.log", mode="w", encoding="utf-8"),
+        logging.FileHandler(ROOT_DIR / "logs/part2_consolidation.log", mode="w", encoding="utf-8"),
         logging.StreamHandler(),
     ],
 )
@@ -1019,17 +1022,17 @@ def main():
         return
 
     # Escribir CSV
-    csv_path = Path("/home/javi/practices/part2_consolidated.csv")
+    csv_path = ROOT_DIR / "data/part2_consolidated.csv"
     write_csv(all_rows, csv_path)
 
     # Escribir reporte
-    report_path = Path("/home/javi/practices/consolidation_report.txt")
+    report_path = ROOT_DIR / "logs/part2_consolidation_report.txt"
     write_report(all_rows, group_mapping, groups_without_data, report_path)
 
     logger.info("\n✅ All done!")
     logger.info(f"   CSV: {csv_path}")
     logger.info(f"   Report: {report_path}")
-    logger.info(f"   Log: consolidation.log")
+    logger.info(f"   Log: logs/part2_consolidation.log")
 
 
 if __name__ == "__main__":

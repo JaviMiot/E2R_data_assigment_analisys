@@ -1,7 +1,0 @@
-2026-03-25 11:51:58,455 - INFO - Loading data from part2_consolidated.csv
-2026-03-25 11:51:58,465 - INFO - Initial dataset shape: 1987 rows × 10 columns
-2026-03-25 11:51:58,468 - INFO - Rows after filtering tools: 1719 (removed 268 rows)
-2026-03-25 11:51:58,468 - INFO - Normalizing time, tools, and elements...
-2026-03-25 11:51:58,500 - INFO - Rows after dropping null Values: 1716 (removed 3 rows)
-2026-03-25 11:51:58,501 - INFO - Final cleaned dataset shape: 1716 rows × 11 columns
-2026-03-25 11:51:58,513 - INFO - Cleaned dataset saved successfully to part2_cleaned.csv

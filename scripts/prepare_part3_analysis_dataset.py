@@ -14,11 +14,13 @@ from typing import Iterable, Optional
 import pandas as pd
 
 
+ROOT_DIR = Path(__file__).resolve().parent.parent
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
     handlers=[
-        logging.FileHandler("part3_analysis_preparation.log", mode="w", encoding="utf-8"),
+        logging.FileHandler(ROOT_DIR / "logs/part3_analysis_preparation.log", mode="w", encoding="utf-8"),
         logging.StreamHandler(),
     ],
 )
@@ -27,10 +29,10 @@ logger = logging.getLogger(__name__)
 
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
-DEFAULT_INPUT_PATH = ROOT_DIR / "part3_consolidated.csv"
-DEFAULT_OUTPUT_PATH = ROOT_DIR / "part3_analysis_ready.csv"
-DEFAULT_TOOLS_LONG_PATH = ROOT_DIR / "part3_tools_long.csv"
-DEFAULT_REPORT_PATH = ROOT_DIR / "part3_analysis_preparation_report.txt"
+DEFAULT_INPUT_PATH = ROOT_DIR / "data/part3_consolidated.csv"
+DEFAULT_OUTPUT_PATH = ROOT_DIR / "data/part3_analysis_ready.csv"
+DEFAULT_TOOLS_LONG_PATH = ROOT_DIR / "data/part3_tools_long.csv"
+DEFAULT_REPORT_PATH = ROOT_DIR / "logs/part3_analysis_preparation_report.txt"
 
 RAW_TO_CANONICAL_COLUMNS = {
     "Group": "group_id",
