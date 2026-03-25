@@ -1,7 +1,7 @@
-2026-03-25 11:05:03,059 - INFO - Loading data from part2_consolidated.csv
-2026-03-25 11:05:03,074 - INFO - Initial dataset shape: 1987 rows × 10 columns
-2026-03-25 11:05:03,080 - INFO - Rows after filtering tools: 1719 (removed 268 rows)
-2026-03-25 11:05:03,081 - INFO - Normalizing time, tools, and elements...
-2026-03-25 11:05:03,114 - INFO - Rows after dropping null Values: 1716 (removed 3 rows)
-2026-03-25 11:05:03,116 - INFO - Final cleaned dataset shape: 1716 rows × 11 columns
-2026-03-25 11:05:03,133 - INFO - Cleaned dataset saved successfully to part2_cleaned.csv
+2026-03-25 11:14:17,478 - INFO - Loading data from part2_consolidated.csv
+2026-03-25 11:14:17,490 - INFO - Initial dataset shape: 1987 rows × 10 columns
+2026-03-25 11:14:17,493 - INFO - Rows after filtering tools: 1719 (removed 268 rows)
+2026-03-25 11:14:17,493 - INFO - Normalizing time, tools, and elements...
+2026-03-25 11:14:17,526 - INFO - Rows after dropping null Values: 1716 (removed 3 rows)
+2026-03-25 11:14:17,527 - INFO - Final cleaned dataset shape: 1716 rows × 11 columns
+2026-03-25 11:14:17,543 - INFO - Cleaned dataset saved successfully to part2_cleaned.csv

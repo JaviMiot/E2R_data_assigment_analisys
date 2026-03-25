@@ -128,6 +128,21 @@ def extract_e2r_category(x):
     else:
         return 'Other'
 
+def normalize_website(x):
+    """Normalize website URLs."""
+    if not isinstance(x, str):
+        return x
+    
+    # Fix weird encoding artefacts
+    x = x.replace("_xfffe_", "-")
+    
+    # Extract the first valid URL if multiple are joined or prefixed
+    urls = re.findall(r'(https?://[^\s/$.?#].[^\s]*)', x)
+    if urls:
+        return urls[0].strip()
+        
+    return x.strip()
+
 def clean_data(input_path: Path, output_path: Path) -> None:
     logger.info(f"Loading data from {input_path}")
     try:
@@ -154,6 +169,7 @@ def clean_data(input_path: Path, output_path: Path) -> None:
 
     df_clean.loc[:, 'Tool used'] = df_clean['Tool used'].apply(normalize_tool_name)
     df_clean.loc[:, 'Elements to be identified'] = df_clean['Elements to be identified'].apply(normalize_e2r_element)
+    df_clean.loc[:, 'Web'] = df_clean['Web'].apply(normalize_website)
 
     # Drop rows with null Value
     initial_clean_len = len(df_clean)
