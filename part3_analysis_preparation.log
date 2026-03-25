@@ -1,0 +1,6 @@
+2026-03-12 11:45:07,677 - INFO - Loading raw Part III CSV: /home/javi/practices/part3_consolidated.csv
+2026-03-12 11:45:08,033 - INFO - Analysis-ready CSV written to: /home/javi/practices/part3_analysis_ready.csv
+2026-03-12 11:45:08,033 - INFO - Tool-long CSV written to: /home/javi/practices/part3_tools_long.csv
+2026-03-12 11:45:08,033 - INFO - Preparation report written to: /home/javi/practices/part3_analysis_preparation_report.txt
+2026-03-12 11:45:08,033 - INFO - Rows preserved: 1589
+2026-03-12 11:45:08,034 - INFO - Rows ready for pair analysis: 844
