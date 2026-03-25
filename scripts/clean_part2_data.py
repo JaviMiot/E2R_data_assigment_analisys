@@ -143,6 +143,28 @@ def normalize_website(x):
         
     return x.strip()
 
+def normalize_value(x):
+    """Normalize the evaluation outcome values."""
+    if not isinstance(x, str):
+        return x
+    
+    x = x.strip()
+    x_lower = x.lower()
+    
+    # Standardize to identical representations
+    if x_lower in ['pass', 'identified by the tool']:
+        return 'Identified by the tool'
+    elif x_lower in ['not identified', 'fail', 'not identified by the tool']:
+        return 'Not identified by the tool'
+    elif 'partially' in x_lower:
+        return 'Partially identified by the tool'
+    elif 'evaluator' in x_lower or 'manual' in x_lower:
+        return 'Identified by the evaluator (in a manual way)'
+    elif x_lower in ['to be verified', 'unknown']:
+        return 'Unknown'
+        
+    return x
+
 def clean_data(input_path: Path, output_path: Path) -> None:
     logger.info(f"Loading data from {input_path}")
     try:
@@ -170,6 +192,7 @@ def clean_data(input_path: Path, output_path: Path) -> None:
     df_clean.loc[:, 'Tool used'] = df_clean['Tool used'].apply(normalize_tool_name)
     df_clean.loc[:, 'Elements to be identified'] = df_clean['Elements to be identified'].apply(normalize_e2r_element)
     df_clean.loc[:, 'Web'] = df_clean['Web'].apply(normalize_website)
+    df_clean.loc[:, 'Value'] = df_clean['Value'].apply(normalize_value)
 
     # Drop rows with null Value
     initial_clean_len = len(df_clean)
