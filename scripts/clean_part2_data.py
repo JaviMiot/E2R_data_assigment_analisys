@@ -104,11 +104,18 @@ def normalize_e2r_element(x):
         return x
     
     x = re.sub(r'^Special characters like , \\&, \\<, \\§ or \\#\\$', r'Special characters like \\, &, <, § or #', x)
-    x = re.sub(r'^"etc." and suspension points$', "'etc.' and suspension points", x)
+    x = re.sub(r'^"etc." and suspension points$', '"etc." and suspension points', x)
     x = re.sub(r'^Passive language / voice$', 'Passive language/voice', x)
     x = re.sub(r'^Words from other languages$', 'Words from other languages (unless they are very well known)', x)
     x = re.sub(r'^Use of synonyms instead of same word$', 'Use of synonyms instead of the same word across the text', x)
     x = re.sub(r'^Adverbs ending in "-ly"$', "Adverbs ending in '-ly'", x)
+    
+    # Handle smart quotes and missed backslashes in certain submissions
+    x = x.replace('“etc.” and suspension points', '"etc." and suspension points')
+    x = x.replace("'etc.' and suspension points", '"etc." and suspension points')
+    x = x.replace("etc.' and suspension points", '"etc." and suspension points')
+    x = x.replace('Adverbs ending in “-ly”', "Adverbs ending in '-ly'")
+    x = x.replace('Special characters like , &, <, § or #', r'Special characters like \, &, <, § or #')
     
     return x
 
