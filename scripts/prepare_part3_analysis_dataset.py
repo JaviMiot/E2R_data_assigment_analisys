@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import json
 import logging
 import re
 import unicodedata
@@ -93,7 +94,7 @@ def _to_nullable_string(value: object) -> pd._libs.missing.NAType | str:
 
 
 def normalize_text(value: object) -> pd._libs.missing.NAType | str:
-    """Normalize a text field without losing paragraph structure."""
+    """Normalize a text field: lowercase, remove bullets/numbering, preserve structure."""
     if pd.isna(value):
         return pd.NA
 
@@ -103,14 +104,69 @@ def normalize_text(value: object) -> pd._libs.missing.NAType | str:
 
     lines = []
     for raw_line in text.split("\n"):
-        clean_line = re.sub(r"[ \t]+", " ", raw_line).strip()
+        # Remove noise: bullets (*, -, •), numeric lists (1., 1.1.), and letter lists (a), (1))
+        # This regex looks for these patterns at the start of the line
+        clean_line = re.sub(
+            r"^[ \t]*([-*•◦]|(\d+(\.\d+)*[.)])|\([a-z0-9]+\)|[a-z][.)])[ \t]*", 
+            "", 
+            raw_line, 
+            flags=re.IGNORECASE
+        )
+        
+        # Remove extraction artifacts like long sequences of underscores or dots
+        clean_line = re.sub(r"_{2,}| \.{3,}", " ", clean_line)
+        
+        # Remove page markers (e.g., Page 1 of 5)
+        clean_line = re.sub(r"(?i)page\s+\d+\s+of\s+\d+", " ", clean_line)
+        
+        # Final whitespace cleanup
+        clean_line = re.sub(r"[ \t]+", " ", clean_line).strip()
+        
         if clean_line:
-            lines.append(clean_line)
+            lines.append(clean_line.lower())
 
     normalized = "\n".join(lines).strip()
     if normalized.lower() in NULL_LIKE_VALUES or not normalized:
         return pd.NA
     return normalized
+
+
+def normalize_comments_json(value: object) -> pd._libs.missing.NAType | str:
+    """Normalize text within a JSON comments structure."""
+    if pd.isna(value) or not str(value).strip():
+        return pd.NA
+    
+    try:
+        # Check if it's actually JSON
+        raw_str = str(value).strip()
+        if not (raw_str.startswith("[") and raw_str.endswith("]")):
+            return normalize_text(value)
+            
+        data = json.loads(raw_str)
+        if not isinstance(data, list):
+            return normalize_text(value)
+        
+        normalized_data = []
+        for item in data:
+            norm_item = {
+                "orig": normalize_text(item.get("orig", "")),
+                "prop": normalize_text(item.get("prop", "")),
+                "comment": normalize_text(item.get("comment", ""))
+            }
+            # Keep as dict but clean up NAs to empty strings for JSON compatibility
+            clean_item = {
+                k: (v if not pd.isna(v) else "") 
+                for k, v in norm_item.items()
+            }
+            if any(clean_item.values()):
+                normalized_data.append(clean_item)
+        
+        if not normalized_data:
+            return pd.NA
+        return json.dumps(normalized_data, ensure_ascii=False)
+    except Exception:
+        # Fallback to generic normalization if JSON parsing fails
+        return normalize_text(value)
 
 
 def normalize_document_name(value: object) -> pd._libs.missing.NAType | str:
@@ -263,7 +319,7 @@ def build_analysis_ready_dataframe(raw_df: pd.DataFrame) -> pd.DataFrame:
     df["document_name_clean"] = df["document_name_raw"].map(normalize_document_name).astype("string")
     df["original_text_clean"] = df["original_text_raw"].map(normalize_text).astype("string")
     df["proposal_text_clean"] = df["proposal_text_raw"].map(normalize_text).astype("string")
-    df["comments_clean"] = df["comments_raw"].map(normalize_text).astype("string")
+    df["comments_clean"] = df["comments_raw"].map(normalize_comments_json).astype("string")
 
     language_pairs = df["language_raw"].map(normalize_language)
     df["language_code"] = language_pairs.map(lambda item: item[0]).astype("string")

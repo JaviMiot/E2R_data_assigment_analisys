@@ -7,6 +7,7 @@ en un único archivo CSV.
 """
 
 import csv
+import json
 import logging
 import shutil
 import tempfile
@@ -544,7 +545,10 @@ def _extract_rows_from_group_openpyxl(
     Returns:
         List of CSV row dicts.
     """
-    rows = []
+    orig_parts = []
+    proposal_parts = []
+    detailed_comments = []
+
     orig_col = col_group["orig_col"]
     proposal_col = col_group["proposal_col"]
     comments_col = col_group.get("comments_col")
@@ -552,7 +556,7 @@ def _extract_rows_from_group_openpyxl(
     try:
         max_row = sheet.max_row or data_header_row + 1
     except Exception:
-        max_row = data_header_row + 100
+        max_row = data_header_row + 1000  # Aumentar margen
 
     for r in range(data_header_row + 1, max_row + 1):
         row_vals = list(sheet.iter_rows(min_row=r, max_row=r, values_only=True))
@@ -568,31 +572,44 @@ def _extract_rows_from_group_openpyxl(
             else None
         )
 
-        if not orig and not proposal:
-            continue
-
         orig_str = str(orig).strip() if orig is not None else ""
         proposal_str = str(proposal).strip() if proposal is not None else ""
         comment_str = str(comment).strip() if comment is not None and str(comment) != "None" else ""
 
-        if not orig_str and not proposal_str:
+        if not orig_str and not proposal_str and not comment_str:
             continue
 
-        rows.append(
-            {
-                "Group": str(group_num),
-                "Document Name": group_meta.get("Document Name", ""),
-                "Language": group_meta.get("Language", ""),
-                "Tool used for the adaptation": group_meta.get(
-                    "Tool used for the adaptation", ""
-                ),
-                "Original Text": orig_str,
-                "Proposal for E2R Text": proposal_str,
-                "Comments": comment_str,
-            }
-        )
+        if orig_str:
+            orig_parts.append(orig_str)
+        if proposal_str:
+            proposal_parts.append(proposal_str)
+        if comment_str:
+            detailed_comments.append({
+                "orig": orig_str,
+                "prop": proposal_str,
+                "comment": comment_str
+            })
 
-    return rows
+    if not orig_parts and not proposal_parts and not detailed_comments:
+        return []
+
+    full_original = " ".join(orig_parts)
+    full_proposal = " ".join(proposal_parts)
+    comments_json = json.dumps(detailed_comments, ensure_ascii=False) if detailed_comments else ""
+
+    return [
+        {
+            "Group": str(group_num),
+            "Document Name": group_meta.get("Document Name", ""),
+            "Language": group_meta.get("Language", ""),
+            "Tool used for the adaptation": group_meta.get(
+                "Tool used for the adaptation", ""
+            ),
+            "Original Text": full_original,
+            "Proposal for E2R Text": full_proposal,
+            "Comments": comments_json,
+        }
+    ]
 
 
 def _extract_rows_from_group_xlrd(
@@ -614,7 +631,10 @@ def _extract_rows_from_group_xlrd(
     Returns:
         List of CSV row dicts.
     """
-    rows = []
+    orig_parts = []
+    proposal_parts = []
+    detailed_comments = []
+
     orig_col = col_group["orig_col"]
     proposal_col = col_group["proposal_col"]
     comments_col = col_group.get("comments_col")
@@ -633,31 +653,44 @@ def _extract_rows_from_group_xlrd(
             else None
         )
 
-        if not orig and not proposal:
-            continue
-
         orig_str = str(orig).strip() if orig else ""
         proposal_str = str(proposal).strip() if proposal else ""
         comment_str = str(comment).strip() if comment else ""
 
-        if not orig_str and not proposal_str:
+        if not orig_str and not proposal_str and not comment_str:
             continue
 
-        rows.append(
-            {
-                "Group": str(group_num),
-                "Document Name": group_meta.get("Document Name", ""),
-                "Language": group_meta.get("Language", ""),
-                "Tool used for the adaptation": group_meta.get(
-                    "Tool used for the adaptation", ""
-                ),
-                "Original Text": orig_str,
-                "Proposal for E2R Text": proposal_str,
-                "Comments": comment_str,
-            }
-        )
+        if orig_str:
+            orig_parts.append(orig_str)
+        if proposal_str:
+            proposal_parts.append(proposal_str)
+        if comment_str:
+            detailed_comments.append({
+                "orig": orig_str,
+                "prop": proposal_str,
+                "comment": comment_str
+            })
 
-    return rows
+    if not orig_parts and not proposal_parts and not detailed_comments:
+        return []
+
+    full_original = " ".join(orig_parts)
+    full_proposal = " ".join(proposal_parts)
+    comments_json = json.dumps(detailed_comments, ensure_ascii=False) if detailed_comments else ""
+
+    return [
+        {
+            "Group": str(group_num),
+            "Document Name": group_meta.get("Document Name", ""),
+            "Language": group_meta.get("Language", ""),
+            "Tool used for the adaptation": group_meta.get(
+                "Tool used for the adaptation", ""
+            ),
+            "Original Text": full_original,
+            "Proposal for E2R Text": full_proposal,
+            "Comments": comments_json,
+        }
+    ]
 
 
 # ---------------------------------------------------------------------------
