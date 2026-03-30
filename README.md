@@ -44,4 +44,4 @@ jupyter notebook notebooks/part2_e2r_analysis.ipynb
 jupyter notebook notebooks/part3_e2r_analysis.ipynb
 ```
 
-For more detailed guidelines, see [AGENTS.md](AGENTS.md).
+
