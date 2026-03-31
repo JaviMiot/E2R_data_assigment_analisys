@@ -306,7 +306,7 @@ task3_data = [
 ]
 
 # Write Task 2 CSV
-output_dir = "/home/javi/practices/data"
+output_dir = "/home/javi/practices/data/llm_comparison"
 os.makedirs(output_dir, exist_ok=True)
 
 fieldnames_t2 = ["Categoría", "Criterio", "Gemini", "ChatGPT", "Claude", "Copilot", "FACILE / RevisiónFACILE", "ReadEasy.ai"]

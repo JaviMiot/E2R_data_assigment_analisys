@@ -150,11 +150,11 @@ def reorganize_student_folder(student_dir):
 
 def main():
     """Process all student submission folders."""
-    base_dir = Path('/home/javi/practices')
+    ROOT_DIR = Path(__file__).resolve().parent.parent.parent
+    base_dir = ROOT_DIR
     
     # Find all student directories
-    student_dirs = sorted([d for d in base_dir.iterdir() 
-                          if d.is_dir() and d.name.endswith('_assignsubmission_file')])
+    student_dirs = sorted([d for d in base_dir.glob("*_assignsubmission_file")])
     
     print(f"Found {len(student_dirs)} student submissions")
     print("=" * 80)

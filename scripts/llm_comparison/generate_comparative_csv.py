@@ -107,7 +107,7 @@ data = [
 ]
 
 # Write to CSV
-output_path = "/home/javi/practices/data/llm_comparative_table.csv"
+output_path = "/home/javi/practices/data/llm_comparison/llm_comparative_table.csv"
 os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
 fieldnames = ["Categoría", "Característica / Criterio de Evaluación", "Gemini", "ChatGPT", "Claude", "Copilot", "FACILE / ReadEasy.ai"]

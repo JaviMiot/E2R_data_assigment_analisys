@@ -250,6 +250,6 @@ def write_csv(filename, data):
         dict_writer.writeheader()
         dict_writer.writerows(data)
 
-write_csv('/home/javi/practices/data/task_2_analysis.csv', task2_data)
-write_csv('/home/javi/practices/data/task_3_analysis.csv', task3_data)
+write_csv('/home/javi/practices/data/llm_comparison/task_2_analysis.csv', task2_data)
+write_csv('/home/javi/practices/data/llm_comparison/task_3_analysis.csv', task3_data)
 print("CSVs generated successfully.")

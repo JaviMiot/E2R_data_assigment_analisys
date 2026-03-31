@@ -140,7 +140,7 @@ data = [
 ]
 
 # Write to CSV
-output_path = "/home/javi/practices/data/prompts_analysis.csv"
+output_path = "/home/javi/practices/data/llm_comparison/prompts_analysis.csv"
 os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
 with open(output_path, "w", encoding="utf-8-sig", newline="") as f:

@@ -21,20 +21,20 @@ This repository contains student assignment submissions for an ICT Accessibility
 ### 1. Data Consolidation
 Extract data from student Excel files into a single CSV:
 ```bash
-python3 scripts/consolidate_part2_to_csv.py
-python3 scripts/consolidate_part3_to_csv.py
+python3 scripts/part2/consolidate_part2_to_csv.py
+python3 scripts/part3/consolidate_part3_to_csv.py
 ```
 
 ### 2. Data Cleaning (Part II)
 Standardize the consolidated data:
 ```bash
-python3 scripts/clean_part2_data.py
+python3 scripts/part2/clean_part2_data.py
 ```
 
 ### 3. Dataset Preparation (Part III)
 Prepare the Part III dataset for analysis:
 ```bash
-python3 scripts/prepare_part3_analysis_dataset.py
+python3 scripts/part3/prepare_part3_analysis_dataset.py
 ```
 
 ### 4. Analysis

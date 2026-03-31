@@ -7,13 +7,13 @@ import pandas as pd
 import numpy as np
 
 # Configure logging
-ROOT_DIR = Path(__file__).resolve().parent.parent
+ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
     handlers=[
-        logging.FileHandler(ROOT_DIR / "logs/part2_cleaning.log", mode="w", encoding="utf-8"),
+        logging.FileHandler(ROOT_DIR / "logs/part2/part2_cleaning.log", mode="w", encoding="utf-8"),
         logging.StreamHandler(),
     ],
 )
@@ -225,13 +225,13 @@ def main():
     parser.add_argument(
         "--input", 
         type=Path, 
-        default=ROOT_DIR / "data/part2_consolidated.csv",
+        default=ROOT_DIR / "data/part2/part2_consolidated.csv",
         help="Path to input consolidated CSV file"
     )
     parser.add_argument(
         "--output", 
         type=Path, 
-        default=ROOT_DIR / "data/part2_cleaned.csv",
+        default=ROOT_DIR / "data/part2/part2_cleaned.csv",
         help="Path to output cleaned CSV file"
     )
     
