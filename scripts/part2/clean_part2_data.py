@@ -67,11 +67,15 @@ def normalize_tool_name(x):
     # Remove prefix "Analysis performed with " if present
     x = re.sub(r"^Analysis performed with\s*", "", x)
     
+    # RevisionFACILE variations
+    if re.search(r"revisi[oó]nfacile", x, re.IGNORECASE):
+        return "RevisionFACILE"
+    
     # Copilot variations
-    x = re.sub(r"(CoPilot|Copilot)", "Copilot", x)
+    x = re.sub(r".*(CoPilot|Copilot).*", "Copilot", x)
     
     # Gemini variations
-    x = re.sub(r".*Gemini$", "Gemini", x)
+    x = re.sub(r".*Gemini.*", "Gemini", x)
     x = re.sub("Google Gemini 3.0 Pro", "Gemini", x)
     x = re.sub(r"Gemini \(Version: 3 Flash\)", "Gemini", x)
     x = re.sub("https://gemini.google.com/", "Gemini", x)
@@ -84,19 +88,18 @@ def normalize_tool_name(x):
     x = re.sub("GEMINI", "Gemini", x)
     
     # ChatGPT variations
-    x = re.sub(r".*ChatGPT 5.2$", "ChatGPT", x)
-    x = re.sub(r"^ChatGPT based on GPT-5.2$", "ChatGPT", x)
+    x = re.sub(r".*ChatGPT.*", "ChatGPT", x)
+    x = re.sub(r".*GPT.*", "ChatGPT", x)
     x = re.sub(r"^Chat GPT$", "ChatGPT", x)
-    x = re.sub(r"^ChatGPT 5.2$", "ChatGPT", x)
     x = re.sub(r"^Chat-GPT$", "ChatGPT", x)
     x = re.sub(r"^Tool 1: ChatGPT 5.2$", "ChatGPT", x)
-    x = re.sub(r"^GPT$", "ChatGPT", x)
     
     # Claude variations
     x = re.sub(r"^Claude Sonnet 4.5 - Extended Thinking$", "Claude", x)
     x = re.sub(r"^Claude AI$", "Claude", x)
     x = re.sub(r"^Claude \+ Manual analysis$", "Claude", x)
     x = re.sub(r"^Claude \+ Manual Analysis$", "Claude", x)
+    x = re.sub(r".*Claude.*", "Claude", x)
     
     return x
 
@@ -184,12 +187,23 @@ def clean_data(input_path: Path, output_path: Path) -> None:
 
     logger.info(f"Initial dataset shape: {df.shape[0]} rows × {df.shape[1]} columns")
 
-    # Filter out RevisionFACILE tools
-    tools_to_exclude = ['RevisionFACILE', 'RevisiónFACILE', 'ChatGPT & Gemini']
-    df_clean = df[~df['Tool used'].isin(tools_to_exclude)]
-    df_clean = df_clean[~df_clean['Tool used'].str.contains('revisionfacile.oeg.fi.upm.es', na=False)].copy()
-
-    logger.info(f"Rows after filtering tools: {len(df_clean)} (removed {len(df) - len(df_clean)} rows)")
+    # Handle mixed tool entries (ChatGPT & Gemini, Copilot) by splitting them into individual rows
+    mask_to_split = df['Tool used'].str.contains('ChatGPT & Gemini|Copilot|CoPilot', case=False, na=False)
+    df_to_split = df[mask_to_split].copy()
+    
+    logger.info(f"Splitting {len(df_to_split)} mixed tool rows into ChatGPT and Gemini variants")
+    
+    # Create copies for ChatGPT and Gemini
+    df_gpt = df_to_split.copy()
+    df_gpt['Tool used'] = 'ChatGPT'
+    
+    df_gem = df_to_split.copy()
+    df_gem['Tool used'] = 'Gemini'
+    
+    # Recombine: original non-mixed rows + the new split rows
+    df_clean = pd.concat([df[~mask_to_split], df_gpt, df_gem], ignore_index=True)
+    
+    logger.info(f"Dataset size after splitting and including RevisionFACILE: {len(df_clean)} rows")
 
     # Apply normalization functions
     logger.info("Normalizing time, tools, and elements...")
