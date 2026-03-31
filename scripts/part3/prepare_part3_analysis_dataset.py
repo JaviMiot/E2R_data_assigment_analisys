@@ -11,6 +11,7 @@ import re
 import unicodedata
 from pathlib import Path
 from typing import Iterable, Optional
+from langdetect import detect
 
 import pandas as pd
 
@@ -59,9 +60,9 @@ LANGUAGE_LABEL_MAP = {
 }
 
 TOOL_PATTERNS = (
-    (re.compile(r"\bchat\s*gpt\b|\bgpt[-\s]?\d+(?:\.\d+)?\b", re.IGNORECASE), "ChatGPT"),
-    (re.compile(r"\bgemini\b", re.IGNORECASE), "Gemini"),
-    (re.compile(r"\bclaude\b|\bcloude\b", re.IGNORECASE), "Claude"),
+    (re.compile(r"\bchat\s*gpt(?:\d+(?:\.\d+)?)?|\bgpt[-\s]?\d+(?:\.\d+)?\b", re.IGNORECASE), "ChatGPT"),
+    (re.compile(r"\bgemini(?:\d+(?:\.\d+)?)?\b", re.IGNORECASE), "Gemini"),
+    (re.compile(r"\bclaude(?:\d+(?:\.\d+)?)?|\bcloude(?:\d+(?:\.\d+)?)?\b", re.IGNORECASE), "Claude"),
     (
         re.compile(r"\bfacile\b|facile-test\.linkeddata\.es", re.IGNORECASE),
         "FACILE",
@@ -212,7 +213,11 @@ def extract_tools(value: object) -> list[str]:
     for pattern, canonical_name in TOOL_PATTERNS:
         match = pattern.search(raw_text)
         if match:
-            matches.append((match.start(), canonical_name))
+            if canonical_name == "Perplexity":
+                matches.append((match.start(), "ChatGPT"))
+                matches.append((match.start(), "Gemini"))
+            else:
+                matches.append((match.start(), canonical_name))
 
     ordered_names = []
     seen = set()
@@ -234,7 +239,7 @@ def derive_tool_family(tool_names: Iterable[str]) -> str:
     families.discard("unknown")
 
     if not families:
-        return "unknown"
+        return "llm"
     if len(families) > 1:
         return "hybrid"
     return next(iter(families))
@@ -531,6 +536,8 @@ def main() -> None:
     args = parse_args()
     logger.info("Loading raw Part III CSV: %s", args.input)
     raw_df = pd.read_csv(args.input, encoding="utf-8-sig")
+
+    raw_df["Language"] = raw_df.apply(lambda x: detect(x["Proposal for E2R Text"]), axis=1)
 
     analysis_df = build_analysis_ready_dataframe(raw_df)
     tools_long_df = build_tools_long_dataframe(analysis_df)
